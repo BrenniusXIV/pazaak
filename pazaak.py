@@ -9,14 +9,34 @@ def start_game():
     else: 
         print("Please type either 'computer' or 'friend' into the console.")
 
-main_deck = {1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4}
 
-def reset_main_deck():
-    main_deck = {1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4}
+class PazaakMainDeck:
+    def __init__(self):
+        self.counter = 0
+        self.contents = {1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4}
+    
+    def reset_main_deck(self):
+        self.contents = {1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4}
+        self.counter = 0
+        print("Main deck reset.")
+
+    def has_card(self, key):
+        if self.contents[key] > 0:
+            return True
+        else:
+            return False
+
+    def choose(self):
+        deck_choice = int(random.randint(1, 10))
+        while not self.has_card(deck_choice):
+            deck_choice = int(random.randint(1,10))
+        self.contents[deck_choice] -= 1
+        self.counter += 1
+        return deck_choice
+        
 
 
-def deck_choice():
-    return int(random.randint(1, 10))
+
 
    
 
