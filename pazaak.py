@@ -10,7 +10,7 @@ def start_game():
         print("Please type either 'computer' or 'friend' into the console.")
 
 
-class PazaakMainDeck:
+class PazaakMainDeck():
     def __init__(self):
         self.counter = 0
         self.contents = {1: 4, 2: 4, 3: 4, 4: 4, 5: 4, 6: 4, 7: 4, 8: 4, 9: 4, 10: 4}
@@ -41,6 +41,7 @@ class PazaakMainDeck:
    
 
 def game_against_computer():
+    main_deck = PazaakMainDeck()
     turn_count = 0
     wager = input("Please enter how many credits you want to wager on the game: ")
     def cycle_turn():
@@ -50,7 +51,7 @@ def game_against_computer():
         turn_count += 1
         print(f"Turn #{turn_count}:")
     cycle_turn()
-    choice_1 = deck_choice()
+    choice_1 = main_deck.choose()
     print(f"Player draws {choice_1} from the main deck.")
 
 
