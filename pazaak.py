@@ -109,7 +109,7 @@ class PazaakGame:
         else:
             print(f"{self.player2.player_name} is standing with {self.player2.get_card_value()}.")
 
-    def check_for_winner(self):
+    def win_condition_to_print(self):
         player1_value = self.player1.get_card_value()
         player2_value = self.player2.get_card_value()
 
@@ -127,6 +127,14 @@ class PazaakGame:
             return f"{self.player2.player_name} has busted out. {self.player1.player_name} wins with {player1_value}."
         else:
             return f"Current scores: \n {self.player1.player_name}: {player1_value} \n {self.player2.player_name}: {player2_value} "
+        
+    def evaluate_score(self):
+        string_to_print = self.win_condition_to_print()
+        if "Current scores" not in string_to_print:
+            self.game_is_over = True
+            print(string_to_print)
+        else:
+            self.cycle_round()
 
    
 
