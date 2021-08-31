@@ -65,7 +65,7 @@ class PazaakGame:
         self.wager = wager
         self.opponent_is_computer = cpu
         self.main_deck = PazaakMainDeck()
-        self.round_count = 0
+        self.round_count = 1
         self.player1 = Player(player1)
         self.player2 = Player(player2)
         self.game_is_over = False
@@ -73,43 +73,36 @@ class PazaakGame:
     
     def cycle_round(self):
         print(f"Wager for this match: {self.wager}")
+        print(f"Current scores: \n {self.player1.player_name}: {self.player1.get_card_value()} \n {self.player2.player_name}: {self.player2.get_card_value()} ")
         self.round_count += 1
         print(f"Round #{self.round_count}:")
     
     # Player turns could be refactored to one function to be DRY, but there will only ever be 2 players, so for now having two turn functions is acceptable.
-    def player1_turn(self):
-        print(f"{self.player1.player_name}'s turn:\n")
-        if not self.player1.is_standing:
+    def player_turn(self, player, opponent):
+        current_player_name = player.player_name
+        current_player_standing = player.is_standing
+        current_opponent_name = opponent.player_name
+        print(f"{current_player_name}'s turn:\n")
+        if not current_player_standing:
             card_drawn = self.main_deck.draw()
-            print(f"{self.player1.player_name} draws {card_drawn} from the main deck.")
-            self.player1.change_card_value(card_drawn)
-            player1_choice = input("Stand, End Turn, or Forfeit?").lower()
-            if player1_choice == "stand":
-                self.player1.is_standing = True
-                print(f"{self.player1.player_name} is standing with {self.player1.get_card_value()}.")
-            elif player1_choice == "forfeit":
-                sys.exit(f"{self.player1.player_name} has forfeited. \n {self.player2.player_name} wins with {self.player2.get_card_value()}!")
+            print(f"{current_player_name} draws {card_drawn} from the main deck.")
+            player.change_card_value(card_drawn)
+            
+            if current_player_name != "computer":
+                player_choice = input("Stand, End Turn, or Forfeit?").lower()
             else:
-                print(f"{self.player1.player_name} ends their turn with {self.player1.get_card_value()}.")
+                player_choice = "end turn"
+            
+            if player_choice == "stand":
+                current_player_standing = True
+                print(f"{current_player_name} is standing with {player.get_card_value()}.")
+            elif player_choice == "forfeit":
+                sys.exit(f"{current_player_name} has forfeited. \n {current_opponent_name} wins with {opponent.get_card_value()}!")
+            else:
+                print(f"{current_player_name} ends their turn with {player.get_card_value()}.")
         else:
-            print(f"{self.player1.player_name} is standing with {self.player1.get_card_value()}.")
+            print(f"{current_player_name} is standing with {player.get_card_value()}.")
     
-    def player2_turn(self):
-        print(f"{self.player2.player_name}'s turn:\n")
-        if not self.player2.is_standing:
-            card_drawn = self.main_deck.draw()
-            print(f"{self.player2.player_name} draws {card_drawn} from the main deck.")
-            self.player2.change_card_value(card_drawn)
-            player2_choice = input("Stand, End Turn, or Forfeit?").lower()
-            if player2_choice == "stand":
-                self.player2.is_standing = True
-                print(f"{self.player2.player_name} is standing with {self.player2.get_card_value()}.")
-            elif player2_choice == "forfeit":
-                sys.exit(f"{self.player2.player_name} has forfeited. \n {self.player1.player_name} wins with {self.player2.get_card_value()}!")
-            else:
-                print(f"{self.player2.player_name} ends their turn with {self.player2.get_card_value()}.")
-        else:
-            print(f"{self.player2.player_name} is standing with {self.player2.get_card_value()}.")
 
     def win_condition_to_print(self):
         player1_value = self.player1.get_card_value()
@@ -127,6 +120,8 @@ class PazaakGame:
             return f"{self.player1.player_name} has busted out. {self.player2.player_name} wins with {player2_value}."
         elif player2_value > 20:
             return f"{self.player2.player_name} has busted out. {self.player1.player_name} wins with {player1_value}."
+        elif player2_value > 20 and player1_value > 20:
+            return f"Both {self.player1.player_name} and {self.player2.player_name} busted out. Draw!"
         else:
             return f"Current scores: \n {self.player1.player_name}: {player1_value} \n {self.player2.player_name}: {player2_value} "
         
@@ -143,9 +138,8 @@ class PazaakGame:
 def game_against_computer(wager, player_name):
     cpu_game = PazaakGame(wager, player_name)
     while cpu_game.game_is_over is False:
-        cpu_game.cycle_round()
-        cpu_game.player1_turn()
-        cpu_game.player2_turn()
+        cpu_game.player_turn(cpu_game.player1, cpu_game.player2)
+        cpu_game.player_turn(cpu_game.player2, cpu_game.player1)
         cpu_game.evaluate_score()
 
     
