@@ -2,9 +2,11 @@ import random
 import sys
 
 def start_game():
+    player1_name = input("Player 1, please enter your name: ")
     opponent_choice = input("Would you like to play against the computer, or against a friend? ").lower()
     if opponent_choice == "computer":
-        game_against_computer()
+        wager = input("Please enter how many credits you want to wager on the game: ")
+        game_against_computer(wager, player1_name)
     elif opponent_choice == "friend":
         game_against_friend()
     else: 
@@ -138,19 +140,15 @@ class PazaakGame:
 
    
 
-def game_against_computer():
-    main_deck = PazaakMainDeck()
-    turn_count = 0
-    wager = input("Please enter how many credits you want to wager on the game: ")
-    def cycle_turn():
-        # nonlocal is like global, but grabs values from the enclosing scope
-        nonlocal turn_count
-        print(f"Wager for this match: {wager}")
-        turn_count += 1
-        print(f"Turn #{turn_count}:")
-    cycle_turn()
-    choice_1 = main_deck.draw()
-    print(f"Player draws {choice_1} from the main deck.")
+def game_against_computer(wager, player_name):
+    cpu_game = PazaakGame(wager, player_name)
+    while cpu_game.game_is_over is False:
+        cpu_game.cycle_round()
+        cpu_game.player1_turn()
+        cpu_game.player2_turn()
+        cpu_game.evaluate_score()
+
+    
 
 
 
