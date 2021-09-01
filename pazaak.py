@@ -8,7 +8,9 @@ def start_game():
         wager = input("Please enter how many credits you want to wager on the game: ")
         game_against_computer(wager, player1_name)
     elif opponent_choice == "friend":
-        game_against_friend()
+        player2_name = input("Player 2, please enter your name: ")
+        wager = input("How many credits will be wagered by each player? ")
+        game_against_friend(wager, player1_name, player2_name)
     else: 
         print("Please type either 'computer' or 'friend' into the console.")
 
@@ -129,6 +131,7 @@ class PazaakGame:
         string_to_print = self.win_condition_to_print()
         if "Current scores" not in string_to_print:
             self.game_is_over = True
+            self.main_deck.reset_main_deck()
             print(string_to_print)
         else:
             self.cycle_round()
@@ -146,7 +149,11 @@ def game_against_computer(wager, player_name):
 
 
 
-def game_against_friend():
-    print('There will be a program here for playing with a friend - stay tuned')
+def game_against_friend(wager, player1_name, player2_name):
+    two_player_game = PazaakGame(wager, player1_name, player2_name, False)
+    while two_player_game.game_is_over is False:
+        two_player_game.player_turn(two_player_game.player1, two_player_game.player2)
+        two_player_game.player_turn(two_player_game.player2, two_player_game.player1)
+        two_player_game.evaluate_score()
 
 start_game()
