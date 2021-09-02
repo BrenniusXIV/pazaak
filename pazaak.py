@@ -46,6 +46,7 @@ class Player:
         self.card_count = 0
         self.card_value = 0
         self.is_standing = False
+        self.has_forfeited = False
 
     def change_card_value(self, card):
         self.card_value += card
@@ -79,7 +80,6 @@ class PazaakGame:
         self.round_count += 1
         print(f"Round #{self.round_count}:")
     
-    # Player turns could be refactored to one function to be DRY, but there will only ever be 2 players, so for now having two turn functions is acceptable.
     def player_turn(self, player, opponent):
         current_player_name = player.player_name
         current_opponent_name = opponent.player_name
@@ -100,7 +100,7 @@ class PazaakGame:
                 print(f"{current_player_name} is standing with {player.get_card_value()}.")
                 return
             elif player_choice == "forfeit":
-                sys.exit(f"{current_player_name} has forfeited. \n {current_opponent_name} wins with {opponent.get_card_value()}!")
+                player.has_forfeited = True
             else:
                 print(f"{current_player_name} ends their turn with {player.get_card_value()}.")
         else:
@@ -111,6 +111,8 @@ class PazaakGame:
     def win_condition_to_print(self):
         player1_value = self.player1.get_card_value()
         player2_value = self.player2.get_card_value()
+        player1_forfeit = self.player1.has_forfeited
+        player2_forfeit = self.player2.has_forfeited
 
         if player1_value == 20 and player2_value != 20:
             return f"{self.player1.player_name} wins with 20!"
@@ -126,6 +128,12 @@ class PazaakGame:
             return f"{self.player2.player_name} has busted out. {self.player1.player_name} wins with {player1_value}."
         elif player2_value > 20 and player1_value > 20:
             return f"Both {self.player1.player_name} and {self.player2.player_name} busted out. Draw!"
+        elif player1_forfeit and not player2_forfeit:
+            return f"{self.player1.player_name} has forfeited. \n {self.player2.player_name} wins with {player2_value}!"
+        elif player2_forfeit and not player1_forfeit:
+            return f"{self.player2.player_name} has forfeited. \n {self.player1.player_name} wins with {player1_value}!"
+        elif player1_forfeit and player2_forfeit:
+            return f"Both players have forfeited.\n {self.player1.player_name} : {self.player2.player_name}\n {player1_value} : {player2_value} \n Draw!"
         else:
             return f"Current scores: \n {self.player1.player_name}: {player1_value} \n {self.player2.player_name}: {player2_value} "
         
@@ -138,7 +146,13 @@ class PazaakGame:
         else:
             self.cycle_round()
 
-   
+def game_over():
+    player_choice = input("Return to main menu? (y/n)")
+
+    if player_choice == "y":
+        start_game()
+    else:
+        sys.exit("Thanks for playing!")
 
 def game_against_computer(wager, player_name):
     cpu_game = PazaakGame(wager, player_name)
@@ -146,16 +160,15 @@ def game_against_computer(wager, player_name):
         cpu_game.player_turn(cpu_game.player1, cpu_game.player2)
         cpu_game.player_turn(cpu_game.player2, cpu_game.player1)
         cpu_game.evaluate_score()
+    game_over()
 
     
-
-
-
 def game_against_friend(wager, player1_name, player2_name):
     two_player_game = PazaakGame(wager, player1_name, player2_name, False)
     while two_player_game.game_is_over is False:
         two_player_game.player_turn(two_player_game.player1, two_player_game.player2)
         two_player_game.player_turn(two_player_game.player2, two_player_game.player1)
         two_player_game.evaluate_score()
+    game_over()
 
 start_game()
