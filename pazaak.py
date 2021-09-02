@@ -82,10 +82,9 @@ class PazaakGame:
     # Player turns could be refactored to one function to be DRY, but there will only ever be 2 players, so for now having two turn functions is acceptable.
     def player_turn(self, player, opponent):
         current_player_name = player.player_name
-        current_player_standing = player.is_standing
         current_opponent_name = opponent.player_name
         print(f"{current_player_name}'s turn:\n")
-        if not current_player_standing:
+        if player.is_standing is False:
             card_drawn = self.main_deck.draw()
             print(f"{current_player_name} draws {card_drawn} from the main deck.")
             player.change_card_value(card_drawn)
@@ -94,16 +93,19 @@ class PazaakGame:
                 player_choice = input("Stand, End Turn, or Forfeit?").lower()
             else:
                 player_choice = "end turn"
+                return
             
             if player_choice == "stand":
-                current_player_standing = True
+                player.is_standing = True
                 print(f"{current_player_name} is standing with {player.get_card_value()}.")
+                return
             elif player_choice == "forfeit":
                 sys.exit(f"{current_player_name} has forfeited. \n {current_opponent_name} wins with {opponent.get_card_value()}!")
             else:
                 print(f"{current_player_name} ends their turn with {player.get_card_value()}.")
         else:
             print(f"{current_player_name} is standing with {player.get_card_value()}.")
+            return
     
 
     def win_condition_to_print(self):
