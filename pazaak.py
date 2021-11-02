@@ -4,10 +4,10 @@ import sys
 def start_game():
     player1_name = input("Player 1, please enter your name: ")
     opponent_choice = input("Would you like to play against the computer, or against a friend? ").lower()
-    if opponent_choice == "computer":
+    if "c" in opponent_choice:
         wager = input("Please enter how many credits you want to wager on the game: ")
         game_against_computer(wager, player1_name)
-    elif opponent_choice == "friend":
+    elif "f" in opponent_choice:
         player2_name = input("Player 2, please enter your name: ")
         wager = input("How many credits will be wagered by each player? ")
         game_against_friend(wager, player1_name, player2_name)
@@ -80,9 +80,8 @@ class PazaakGame:
         self.round_count += 1
         print(f"Round #{self.round_count}:")
     
-    def player_turn(self, player, opponent):
+    def player_turn(self, player):
         current_player_name = player.player_name
-        current_opponent_name = opponent.player_name
         print(f"{current_player_name}'s turn:\n")
         if player.is_standing is False:
             card_drawn = self.main_deck.draw()
@@ -95,11 +94,11 @@ class PazaakGame:
                 player_choice = "end turn"
                 return
             
-            if player_choice == "stand":
+            if "s" in player_choice:
                 player.is_standing = True
                 print(f"{current_player_name} is standing with {player.get_card_value()}.")
                 return
-            elif player_choice == "forfeit":
+            elif "f" in player_choice:
                 player.has_forfeited = True
             else:
                 print(f"{current_player_name} ends their turn with {player.get_card_value()}.")
@@ -118,9 +117,9 @@ class PazaakGame:
             return f"{self.player1.player_name} wins with 20!"
         elif player2_value == 20 and player1_value != 20:
             return f"{self.player2.player_name} wins with 20!"
-        elif player1_value > player2_value and self.player2.is_standing:
+        elif player1_value > player2_value and self.player2.is_standing and not player1_value > 20:
             return f"{self.player1.player_name} wins with {player1_value} against {self.player2.player_name}'s standing {player2_value}."
-        elif player2_value > player1_value and self.player1.is_standing:
+        elif player2_value > player1_value and self.player1.is_standing and not player2_value > 20:
             return f"{self.player2.player_name} wins with {player2_value} against {self.player1.player_name}'s standing {player1_value}."
         elif player1_value > 20:
             return f"{self.player1.player_name} has busted out. {self.player2.player_name} wins with {player2_value}."
@@ -149,7 +148,7 @@ class PazaakGame:
 def game_over():
     player_choice = input("Return to main menu? (y/n)")
 
-    if player_choice == "y":
+    if "y" in player_choice:
         start_game()
     else:
         sys.exit("Thanks for playing!")
@@ -157,8 +156,8 @@ def game_over():
 def game_against_computer(wager, player_name):
     cpu_game = PazaakGame(wager, player_name)
     while cpu_game.game_is_over is False:
-        cpu_game.player_turn(cpu_game.player1, cpu_game.player2)
-        cpu_game.player_turn(cpu_game.player2, cpu_game.player1)
+        cpu_game.player_turn(cpu_game.player1)
+        cpu_game.player_turn(cpu_game.player2)
         cpu_game.evaluate_score()
     game_over()
 
@@ -166,8 +165,8 @@ def game_against_computer(wager, player_name):
 def game_against_friend(wager, player1_name, player2_name):
     two_player_game = PazaakGame(wager, player1_name, player2_name, False)
     while two_player_game.game_is_over is False:
-        two_player_game.player_turn(two_player_game.player1, two_player_game.player2)
-        two_player_game.player_turn(two_player_game.player2, two_player_game.player1)
+        two_player_game.player_turn(two_player_game.player1)
+        two_player_game.player_turn(two_player_game.player2)
         two_player_game.evaluate_score()
     game_over()
 
